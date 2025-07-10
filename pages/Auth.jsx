@@ -11,14 +11,34 @@ export default function Auth() {
   };
 
   const handleSubmit = () => {
-    if (!form.email || !form.password || (!isLogin && !form.username)) {
-      alert("Please fill in all fields.");
-      return;
-    }
+    const { username, email, password } = form;
+    let users = JSON.parse(localStorage.getItem("userList")) || [];
 
-    
-    localStorage.setItem("user", JSON.stringify(form));
-    navigate("/");
+    if (isLogin) {
+      // Find user
+      const match = users.find(u => u.email === email && u.password === password);
+      if (match) {
+        localStorage.setItem("user", JSON.stringify(match));
+        navigate("/");
+      } else {
+        alert("Invalid email or password.");
+      }
+    } else {
+      // Check for duplicate email
+      if (!username || !email || !password) {
+        alert("Please fill in all fields.");
+        return;
+      }
+      const exists = users.find(u => u.email === email);
+      if (exists) {
+        alert("Email already registered.");
+        return;
+      }
+      users.push({ username, email, password });
+      localStorage.setItem("userList", JSON.stringify(users));
+      localStorage.setItem("user", JSON.stringify({ username, email, password }));
+      navigate("/");
+    }
   };
 
   return (
@@ -51,19 +71,13 @@ export default function Auth() {
         onChange={handleChange}
       />
 
-      <button
-        onClick={handleSubmit}
-        className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-      >
+      <button onClick={handleSubmit} className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
         {isLogin ? "Login" : "Register"}
       </button>
 
       <p className="mt-4 text-sm text-gray-500">
         {isLogin ? "Don't have an account?" : "Already registered?"}{" "}
-        <button
-          onClick={() => setIsLogin(!isLogin)}
-          className="text-indigo-600 underline font-medium"
-        >
+        <button onClick={() => setIsLogin(!isLogin)} className="text-indigo-600 underline font-medium">
           {isLogin ? "Register" : "Login"}
         </button>
       </p>

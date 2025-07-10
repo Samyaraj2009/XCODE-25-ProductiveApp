@@ -26,7 +26,7 @@ export default function Navbar() {
         <li>
           {user ? (
             <div className="flex items-center space-x-3">
-              <span className="text-white font-semibold">{user.username || user.email}</span>
+              <span className="font-semibold text-white">{user.username}</span>
               <button
                 onClick={handleLogout}
                 className="text-sm bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white transition"
